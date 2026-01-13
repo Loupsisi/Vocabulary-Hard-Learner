@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head lang="fr">
+        <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Russian Learner Français</title>
+        <link rel="stylesheet" href="styleRussian.css">
+    </head>
+    <body onload="AfficheMot() ; OnLoad()" onkeydown="if(event.key === 'Escape') Skip()">
+
+        <div class="HeaderBox">
+            <div class="LanguageButtonBox">
+               <!-- <button class="LanguageButton"></button>
+                <button class="LanguageButton">Français-Russe</button> -->
+            </div>
+
+            <div class="ListButtonBox">
+                <button class="ListButton" onclick="SeeListButton()">Lists</button>
+                <button class="ListButton" onclick="SelectListButton()">List Choice</button>
+                <button class="ListButton" onclick="CreateListButton() ">List Modification</button>
+            </div>
+            <div class="GameModeButtonBox">
+                <button id="ModeButton" class="ListButton" onclick="ChangeLanguage()">Translation-Word</button>
+            </div>
+        </div>
+        <div class="ContentBox">
+            <div class="ProgressBox">
+                <div id="GameProgress" class="GameProgress">0/20</div>
+             <!--  <div class="GameProgressBarBox">
+                    <div id="GameProgressBar" class="GameProgressBar"></div> -->
+                </div>
+                <div id="GameMode" class="GameMode">Current List : </div>
+            </div>
+            <div class="AllWordBox">
+                <div id="LastWord" class="LastWord">Previous Word</div>
+                <div id="WordBox" class="WordBox">Word to find</div>
+            </div>
+            <div class="AnswerBox">
+                <button class="SkipButton" onclick="Skip()">Skip</button>
+                <input type="text" id="InputBox" class="InputBox" autocomplete="off" onkeyup="GetAnswer()">
+            </div>
+        </div>
+        <div class="HistoriqueBox">
+            <div class="GoodAnswerHistory"></div>
+            <div id="SkipHistory" class="SkipHistory">History : </div>
+        </div>
+
+
+        <div class="ApparitionElements">
+            <div id="ChoiceListConteneur"></div>
+            <div id="SeeListConteneur" class="SeeListConteneur"></div>
+
+
+        </div>
+
+        <script src="scriptRussian.js"></script>
+    </body>
+</html>
