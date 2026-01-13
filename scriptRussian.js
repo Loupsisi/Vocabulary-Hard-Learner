@@ -534,6 +534,7 @@ function CheckAnswer() {
         UpdateScore();
         UpdateHistorique();
         AfficheMot();
+        Reponses[0] ++;
 
 
     }
@@ -547,7 +548,7 @@ function CheckAnswer() {
 function UpdateHistorique() {
 
     LastNombreRandom = TabNombreRandom[TabNombreRandom.length-2];
-    HistoriqueElement.innerHTML ="<div>History : </div>";
+    HistoriqueElement.innerHTML ="";
 
     for (i = Historique.length-1; i >= 1; i -= 2) {
 
@@ -580,29 +581,30 @@ function UpdateScore() {
 
     if (Historique.length /2 < LongueurPartie) {
 
-     /*   for (i = 1; i <= Historique.length; i += 2) {
+        for (i = 1; i <= Historique.length; i += 2) {
 
             if (Historique[i] == -1) {
 
-                GameProgressBarElement.innerHTML += `
-                    <div class="BonneReponseSquare"> *</div>
-                `;
-                Reponses[0] ++;
+              //  GameProgressBarElement.innerHTML += `
+              //      <div class="BonneReponseSquare"> *</div>
+              //  `;
+                
 
             }
             else {
 
-                GameProgressBarElement.innerHTML += `
-                    <div class="SkipReponseSquare"> *</div>
-                `;
-                Reponses[1] ++;
+              //  GameProgressBarElement.innerHTML += `
+             //       <div class="SkipReponseSquare"> *</div>
+              //  `;
+                
 
             }
 
-        }*/
+        }
     }
     else {
         let Gagner = "";
+        
         if (Reponses[0] > Reponses[1])
             {
                 Gagner = "Good job ! You Won !";
@@ -618,6 +620,8 @@ function UpdateScore() {
 
             }
 
+           
+
         
 
         ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor"></p>
@@ -631,7 +635,7 @@ function UpdateScore() {
         </div>
         `;
        
-
+        Reponse[0] = 0; Reponse[1] = 0;
     }
 
 }
@@ -664,6 +668,7 @@ function Skip() {
     AfficheMot();
     UpdateHistorique();
     UpdateScore();
+    Reponses[1] ++;
     
 
 }
@@ -675,12 +680,12 @@ function AfficheLastWord() {
 
     if (TabNombreRandom.length == 1 )
     {
-        LastWordElement.innerText = "Previous word : ";
+        LastWordElement.innerText = "";
     }
     else
     {
 
-        LastWordElement.innerText = "Previous word : " + ChoosedList[LastNombreRandom].ru + " => " + ChoosedList[LastNombreRandom].fr;
+        LastWordElement.innerText = ChoosedList[LastNombreRandom].ru + " => " + ChoosedList[LastNombreRandom].fr;
     }
 
 }
