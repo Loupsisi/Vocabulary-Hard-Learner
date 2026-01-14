@@ -3,6 +3,8 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .ContentBox {
@@ -15,6 +17,14 @@ body {
 .HeaderBox {
     width: 100%;
     /* Évite les hauteurs fixes ici pour que ça s'adapte aux petits écrans */
+}
+
+button {
+
+    color: black;
+    border-color: black;
+    border-style: solid;
+
 }
 
 button:hover {
@@ -59,19 +69,43 @@ button:hover {
 
     margin-top: 2dvh;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+}
+
+
+.GameLengthBox {
+
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
+
+}
+
+.GameLengthButtonBox {
+
+    display: flex;
     align-items: center;
+    justify-content: center;
+
+}
+
+.GameLengthButton {
+
+    height: 4dvh;
+    width: 6dvh;
+    font-size: 2dvh;
 }
 
 .GameProgress {
     font-size: 5dvh;
+    display: flex;
+
 }
 
 
 .GameMode{
 
     font-size: 3dvh;
+    display: flex;
 
 }
 
@@ -128,15 +162,20 @@ button:hover {
 .SkipButton{
 
     width: 35%;
+    height: 3.5dvh;
+    font-size: 2dvh;
+    border-radius: 5px;
 
 }
 
 .InputBox {
 
-    width: 80%;
+    width: 85%;
     height: 4dvh;
     font-size: 3dvh;
     text-align: center;
+    border: 3px solid black;
+    border-radius: 5px;
 
 }
 
@@ -157,10 +196,9 @@ button:hover {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    max-height: 28dvh;
+    max-height: 32dvh;
     text-align: center;
-
-    
+    font-size: 2.5dvh;
 
 }
 
@@ -168,6 +206,7 @@ button:hover {
 
     background-color:rgba(67, 220, 67, 0.933);
     border: 1px solid black;
+
 }
 
 .SkipReponse {
@@ -226,8 +265,11 @@ button:hover {
 */
 .ListButtonInMenu {
 
-    font-size: 25px;
+    font-size: 4dvh;
     display: flex;
+    text-align: center;
+    align-items: center;
+    border-radius: 5px;
 
 } 
 
@@ -242,6 +284,8 @@ button:hover {
     align-items: center;
     justify-content: center;
     top: 20%;
+    min-width: 500px;
+
      
 
 }
@@ -253,12 +297,17 @@ button:hover {
     flex-direction: row;
     flex-wrap: wrap;
     position: absolute;
-    max-width: 300px;
+    width: 80%;
+    max-width: 500px;
     border: 5px solid black;
     padding: 10px;
     background-color: white;
     justify-self: center;
     top: 0px;
+    justify-content: center;
+    max-height: 85vh;       /* INDISPENSABLE : Empêche le menu de sortir de l'écran (85% de la hauteur) */
+    overflow-y: auto;
+
 }
 
 .SeeListButtonBox {
@@ -270,17 +319,54 @@ button:hover {
     padding: 3px;
     border: 2px solid black;
     border-radius: 4px;
-    width: fit-content;
+    width: 100%;
     max-width: 100%;
     flex-wrap: wrap;
-
+    height: 13dvh;
+    max-height: 20dvh;
 
 }
-
 
 .SeeListWordsBox {
 
     margin-top: 10px;
+    font-size: 2.3dvh;
+    max-height: 60dvh;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.SeeListWordTable {
+
+    display: flex;
+    flex-wrap: wrap;
+    height: auto;
+    text-align: center;
+    background-color: gray;
+    border-radius: 5px;
+
+}
+
+.SeeListWordTable th {
+
+    border: 3px solid black;
+    border-radius: 5px;
+    background-color: rgb(232, 232, 232);
+
+}
+
+.SeeListWordTable td {
+
+    border: 2px solid black;
+    background-color: rgb(241, 241, 241);
+
+}
+
+.DeleteWordButton {
+
+    width: 5dvh;
+    font-size: 2dvh;
 
 
 }
@@ -297,5 +383,6 @@ button:hover {
     z-index: 0;
     margin: 0;
     user-select: none;
+    display: block;
 
 }

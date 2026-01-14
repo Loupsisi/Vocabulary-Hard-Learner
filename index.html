@@ -25,12 +25,14 @@
         </div>
         <div class="ContentBox">
             <div class="ProgressBox">
-                <div id="GameProgress" class="GameProgress">0/20</div>
+                <div id="GameLengthBox" class="GameLengthBox">
+                    <button id="GameProgress" class="GameProgress" onclick="GameLengthButton()">0/20</button>
+                </div>
              <!--  <div class="GameProgressBarBox">
                     <div id="GameProgressBar" class="GameProgressBar"></div> 
-                </div> -->
-                <div id="GameMode" class="GameMode">Current List : </div>
+                </div> --> 
             </div>
+            <div id="GameMode" class="GameMode">Current List : </div>
             <div class="AllWordBox">
                 <div class="PreviousWord">Previous Word: </div>
                 <div id="LastWord" class="LastWord"></div>
@@ -38,7 +40,7 @@
             </div>
             <div class="AnswerBox">
                 <button class="SkipButton" onclick="Skip()">Skip</button>
-                <input type="text" id="InputBox" class="InputBox" autocomplete="off" onkeyup="GetAnswer()">
+                <input type="text" id="InputBox" class="InputBox" autocomplete="off" onkeyup="GetAnswer()" placeholder="Type the answer">
             </div>
         </div>
         <div class="HistoriqueBox">

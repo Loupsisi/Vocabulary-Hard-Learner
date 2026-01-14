@@ -86,7 +86,7 @@ let LongueurPartie = 20;
 
 const HistoriqueElement = document.getElementById("SkipHistory");
 const InputBoxElement = document.getElementById("InputBox");
-const GameProgressElement = document.getElementById("GameProgress");
+let GameProgressElement = document.getElementById("GameProgress");
 const GameProgressBarElement = document.getElementById("GameProgressBar");
 const ListElements = document.getElementById("SeeListConteneur");
 
@@ -102,9 +102,9 @@ const GameProgressBarClass = document.getElementsByClassName("GameProgressBar");
 
 function SelectListButton() {
 
-    let ListString = "";
+    ListString = "";
 
-    ListName.forEach(element => { ListString += `<button class="ListButtonInMenu" onclick="SelectList('${element}') ; ResetPartie()">${element}</button>
+    ListName.forEach(element => { ListString += `<button class="ListButtonInMenu" onclick="SelectList('${element}')">${element}</button>
         `;  
     });
 
@@ -125,15 +125,29 @@ function SelectList(List) {
 
             ListNumber ++;
             if (List == element) {
-                ListeChoisie = ListNumber;
+                if (NombreMotListe[ListNumber] !== 0) {
+                    ListeChoisie = ListNumber;
+                    ListeChoosed = MesListes[ListName[ListeChoisie]];
+                    ResetPartie()
+                }
+                else 
+                {
+                    ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor" onclick="RefreshListElements()"></p>
+                    <div class="SeeListBox">
+                        <div class="SeeListButtonBox">
+                            ${ListString}
+                        </div>
+                        <div>This List is empty !</div>
+                    </div>
+                    `;
+                }
+                
             }
         
         });
 
-        ListeChoosed = MesListes[ListName[ListeChoisie]];
 
-    SelectListButton();
-    AfficheMot();
+
 
 }
 
@@ -182,26 +196,54 @@ function SeeList(List) {
     let ChoosedList = MesListes[ListName[SeeListChoosed]];
     let NbList = -1;
     
-    ChoosedList.forEach( element => {
+    if (ChoosedList.length !== 0)
+    {
+         ChoosedList.forEach( element => {
 
-        ListWords += `
+            ListWords += `
 
-        <div>${element.fr} = ${element.ru}</div>
+            <tr>
+                <td>${element.fr}</td>
+                <td>${element.ru}</td>
+            </tr>
 
-        `;
-    });
+            `;
+        });
 
-    ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor" onclick="RefreshListElements()"></p>
+     ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor" onclick="RefreshListElements()"></p>
         <div class="SeeListBox">
             <div class="SeeListButtonBox">
                 ${ListString}
             </div>
             <div class="SeeListWordsBox">
-                ${ListWords}
+                <table class="SeeListWordTable">
+                    <tr>
+                        <th>Word</th>
+                        <th>Translation</th>
+                    </tr>
+                        ${ListWords}
+                </table>
             </div>
         </div>
         `;
 
+    }
+    else {
+
+        ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor" onclick="RefreshListElements()"></p>
+        <div class="SeeListBox">
+            <div class="SeeListButtonBox">
+                ${ListString}
+            </div>
+            <div>This list is empty...<div>
+        </div>
+        `;
+
+    }
+
+   
+
+   
 }
 
 
@@ -275,9 +317,9 @@ function ListToAddWord(List) {
     for (i = 0; i < ChoosedList.length; i++) {
 
         ListWords += `
-
-            <div>'${(ChoosedList[i]).fr}' = '${(ChoosedList[i]).ru}' <button onclick="DeleteWord('${i}')">-</button></div>
-
+            <tr>
+                <td>${(ChoosedList[i]).fr}</td> <td>${(ChoosedList[i]).ru}</td><td class="DeleteWordButton"><button class="DeleteWordButton" onclick="DeleteWord('${i}')">-</button></td>
+            </tr>
         `;
     }
     
@@ -289,10 +331,12 @@ function ListToAddWord(List) {
         <div class="SeeListBox">
             <div class="SeeListButtonBox">
                 ${ListString}
-                <input style="text" id="AddWordInput" placeholder="'Translation = Word =...'" onkeydown="if(event.key === 'Enter') AddWord()">
+                <input style="text" id="AddWordInput" class="AddWordInput" placeholder="Translation = Word =..." onkeydown="if(event.key === 'Enter') AddWord()">
             </div>
             <div class="SeeListWordsBox">
-                ${ListWords}
+                <table class=SeeListWordTable>
+                    ${ListWords}
+                </table>
             </div>
         </div>
         `;
@@ -315,12 +359,16 @@ function AddWord() {
 
     const NewWordInputBox = document.getElementById("AddWordInput");
 
-    const DecompositionMot = NewWordInputBox.value.split("=");
+    let DecompositionMot = [""];
+
+    DecompositionMot = NewWordInputBox.value.split("=");
+    const Index = DecompositionMot.lastIndexOf();
+
 
     for (i = 0; i < DecompositionMot.length; i +=2)
     {
 
-        let NewWord = {fr: DecompositionMot[i], ru: DecompositionMot[i+1]};
+        let NewWord = {fr: (DecompositionMot[i] || "Missing"), ru: (DecompositionMot[i+1] || "Missing")};
 
         CreateChoosedList.push(NewWord);
         console.log(ListeAddWordChoosed);
@@ -349,34 +397,64 @@ function CreateListeMenu() {
     ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor" onclick="RefreshListElements()"></p>
         <div class="SeeListBox">
             <div class="SeeListButtonBox">
-                <input style="text" id="AddWordInput" placeholder="List's Name" onkeydown="if(event.key === 'Enter') CreateList()">
+                <input style="text" id="AddListInput" class="AddListInput" placeholder="List's Name" onkeydown="if(event.key === 'Enter') CreateList()">
             </div>
         </div>
     `;
 
 }
 
+function DoesListAlreadyExist(List) {
+    
+    if (ListName.indexOf(`${List}`) == -1)
+    {
+        return true;
+    }
+    else 
+    {
+        return false;
+    }
+
+}
+
 function CreateList() {
 
-    const NewListeInputBox = document.getElementById("AddWordInput");
+    const NewListeInputBox = document.getElementById("AddListInput");
 
-
-    ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor" onclick="RefreshListElements()"></p>
-        <div class="SeeListBox">
-            <div class="SeeListButtonBox">
-                <input style="text" id="AddWordInput" placeholder="List's Name" onkeydown="if(event.key === 'Enter') CreateList()">
-                <p>List Created !</p>
-            </div>
-        </div>
-    `;
 
     if (NewListeInputBox.value !== "")
     {
-    MesListes[NewListeInputBox.value] = [];
-    ListName.push(NewListeInputBox.value);
-    NombreMotListe.push(0);
-    localStorage.setItem("ListWordCount", NombreMotListe);
-    localStorage.setItem("UserLists", ListName);
+        if (DoesListAlreadyExist(NewListeInputBox.value))
+        {
+
+            ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor" onclick="RefreshListElements()"></p>
+                <div class="SeeListBox">
+                    <div class="SeeListButtonBox">
+                        <input style="text" id="AddListInput" class="AddListInput" placeholder="List's Name" onkeydown="if(event.key === 'Enter') CreateList()">
+                        <p>List Created !</p>
+                    </div>
+                </div>
+            `;
+             MesListes[NewListeInputBox.value] = [];
+            ListName.push(NewListeInputBox.value);
+            NombreMotListe.push(0);
+            localStorage.setItem("ListWordCount", NombreMotListe);
+            localStorage.setItem("UserLists", ListName);
+        }
+        else {
+            ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor" onclick="RefreshListElements()"></p>
+                <div class="SeeListBox">
+                    <div class="SeeListButtonBox">
+                        <input style="text" id="AddListInput" class="AddListInput" placeholder="List's Name" onkeydown="if(event.key === 'Enter') CreateList()">
+                        <p>List already exists !</p>
+                    </div>
+                </div>
+            `;
+
+        }
+
+
+       
     }
 
    
@@ -571,9 +649,54 @@ function UpdateHistorique() {
 
 }
 
+function GameLengthButton() {
+    const GameLengthElement = document.getElementById("GameLengthBox");
+
+    const String = `
+        <div class="GameLengthButtonBox">
+            <button class="GameLengthButton" onclick="UpdateGameLength(${10})">+10</button>
+            <button class="GameLengthButton" onclick="UpdateGameLength(${5})">+5</button>
+        </div>
+        <button id="GameProgress" class="GameProgress" onclick="GameLengthButton()">${Historique.length / 2}/${LongueurPartie}</button>
+        <div class="GameLengthButtonBox">
+            <button class="GameLengthButton" onclick="UpdateGameLength(${-5})">-5</button>
+            <button class="GameLengthButton" onclick="UpdateGameLength(${-10})">-10</button>
+        </div>
+    `;
+    
+    if (GameLengthElement.innerHTML == String)
+    {
+        console.log("haha");
+        GameLengthElement.innerHTML = `<button id="GameProgress" class="GameProgress" onclick="GameLengthButton()">${Historique.length / 2}/${LongueurPartie}</button>`;
+    }
+    else {
+        console.log("blabla");
+        GameLengthElement.innerHTML = String;  
+    }
+
+    
+    GameProgressElement = document.getElementById("GameProgress");
+}
+    
+
+function UpdateGameLength(Number) {
+
+    
+
+    if (LongueurPartie + Number > 0 && LongueurPartie + Number <= 100 && (LongueurPartie + Number) > (Historique.length / 2))
+    {
+        LongueurPartie += Number
+        GameProgressElement.innerText  = (Historique.length / 2) + "/" + LongueurPartie;
+        
+    }
+
+}
+
 function UpdateScore() {
 
-    GameProgressElement.innerText = (Historique.length / 2) + "/20";
+    GameProgressElement = document.getElementById("GameProgress");
+
+    GameProgressElement.innerText = (Historique.length / 2) + "/" + LongueurPartie;
 
     //GameProgressBarElement.innerHTML = "";
 
@@ -707,21 +830,29 @@ function AfficheMot() {
     const WordBoxElement = document.getElementById("WordBox");
     ChoosedList = MesListes[ListName[ListeChoisie]];
 
-    NombreRandom = Math.floor(Math.random() * ChoosedList.length);
-    TabNombreRandom.push(NombreRandom);
+    if (ChoosedList.length == 0){
 
-    if (FrRu == false)
-    {
-        WordBoxElement.innerText = `${ChoosedList[NombreRandom].ru}`;
+        WordBoxElement.innerText = "The list is empty !";
     }
     else {
 
-        WordBoxElement.innerText = `${ChoosedList[NombreRandom].fr}`;
+        NombreRandom = Math.floor(Math.random() * ChoosedList.length);
+        TabNombreRandom.push(NombreRandom);
+
+        if (FrRu == false)
+        {
+            WordBoxElement.innerText = `${ChoosedList[NombreRandom].ru}`;
+        }
+        else {
+
+            WordBoxElement.innerText = `${ChoosedList[NombreRandom].fr}`;
+
+        }
+        GameModeText.innerText = `Current List : ${ListName[ListeChoisie]}`;
+
+        AfficheLastWord();
 
     }
-    GameModeText.innerText = `Current List : ${ListName[ListeChoisie]}`;
-
-    AfficheLastWord();
 
 }
 
