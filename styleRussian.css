@@ -144,7 +144,7 @@ button:hover {
     margin-bottom: 4dvh;
     font-size: 4.5dvh;
     border: 5px double black;
-    padding: 7px;
+    padding: 2dvh;
 
 }
 
@@ -185,7 +185,6 @@ button:hover {
     flex-direction: column;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
     margin-top: 2dvh;
 
 
@@ -198,7 +197,7 @@ button:hover {
     flex-wrap: wrap;
     max-height: 32dvh;
     text-align: center;
-    font-size: 2.5dvh;
+    font-size: 2.4dvh;
 
 }
 
@@ -294,7 +293,7 @@ button:hover {
 .SeeListBox {
 
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
     position: absolute;
     width: 80%;
@@ -315,15 +314,26 @@ button:hover {
     display: flex;
     justify-content: center;
     align-self: center;
+    overflow-y: auto;
     gap: 3px;
     padding: 3px;
     border: 2px solid black;
     border-radius: 4px;
-    width: 100%;
+    width: 80%;
     max-width: 100%;
     flex-wrap: wrap;
     height: 13dvh;
-    max-height: 20dvh;
+
+}
+
+.AddWordInput {
+
+    display: flex;
+    border: 2px solid black;
+    font-size: 2dvh;
+    width: 50%;
+    align-self: center;
+    text-align: center;
 
 }
 
@@ -335,6 +345,7 @@ button:hover {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .SeeListWordTable {
@@ -385,4 +396,169 @@ button:hover {
     user-select: none;
     display: block;
 
+}
+
+@media (min-width: 800px) {
+
+
+
+    body {
+
+        margin: 0;
+
+    }
+
+    .ContentBox {
+
+        min-width: 600px;
+        background-color: rgb(238, 238, 238);
+        border: 100px solid rgb(209, 209, 209);
+        border-top: 0px;
+        border-bottom: 0px;
+    }
+
+    .HistoriqueBox {
+
+        background-color: rgb(238, 238, 238);
+        border: 100px solid rgb(209, 209, 209);
+
+        border-top: 0px;
+        border-bottom: 0px;
+        margin: 0;
+        height: 300px;
+        max-height: 213px;
+    }
+
+    .ListButtonBox {
+
+        background-color: gray;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border: 2px solid black;
+
+
+
+    }
+
+    .ListButton {
+
+        font-size: 20px;
+        height: 65px;
+        width: 300px;
+
+    }
+
+    .GameModeButtonBox {
+
+        background-color: rgb(238, 238, 238);
+        border: 2px solid darkgray;
+        border-right: 0px;
+        border-left: 0px;
+        width: 100%;
+        justify-self: center;
+        gap:1px;
+
+    }
+
+    .GameModeButton {
+
+        height: 45px;
+        width: 130px;
+        border-radius: 5px;
+        border: 2px solid black;
+    }
+
+    .AllWordBox {
+
+        width: 100%;
+        gap: 20px;
+        margin-bottom: 20px;
+
+       
+    }
+
+    .PreviousWordBox {
+
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        right: 114px;
+        align-content: center;
+
+    }
+
+    .PreviousWord {
+        text-align: center;
+    }
+
+    .LastWord {
+
+        background-color: white;
+        word-wrap: break-word;
+        white-space: normal;
+        max-width: 200px;
+        text-align: center;
+
+    }
+
+    .WordBoxBox {
+        
+        padding: 80px;
+        border: 8px double black;
+        width: 30dvw;
+        height: 5dvh;
+        max-height: 10dvh;
+        max-width: 30dvw;
+        justify-items: center;
+        align-content: center;
+        position: relative;
+        background-color: white;
+
+    }
+
+    .WordBox {
+
+ 
+        align-self: center;
+        justify-self: center;
+        text-align: center;
+        max-width: 200px;
+        max-height: 15dvh;
+        word-wrap: break-word;
+        border: none;
+        margin: 0;
+        padding: 0;
+
+        
+
+    }
+    
+
+    .SeeListConteneur {
+
+        height: 200px;
+
+    }
+
+    .SeeListBox {
+
+        height: 200px;
+
+    }
+
+    .SeeListButtonBox {
+
+        height: 200px;
+    }
+
+    .ListButtonInMenu {
+
+        width: fit-content;
+        height: fit-content;
+
+    }
+
+
+
+    
 }

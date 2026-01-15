@@ -93,13 +93,374 @@ const ListElements = document.getElementById("SeeListConteneur");
 
 const GameProgressBarClass = document.getElementsByClassName("GameProgressBar");
 
-    // -------------Variables normales--------------
-
-
-
 
 
 // ---------------------Fonctions---------------------
+
+//----------------------------------------Fonction OnLoad-----------------------------------------------
+
+function OnLoad() {
+
+
+  //  GameProgressBarElement.style.border = "3px solid transparent";
+
+
+
+    if (GameAlreadyPlayed == "yes") {
+    
+    const ListNameLocal = localStorage.getItem("UserLists").split(",");
+    const MotsLocal = localStorage.getItem("Mots").split(".");
+    const NombreMotListeLocal = localStorage.getItem("ListWordCount").split(",");
+
+    ListName = [];
+    
+    let i = 0;
+    let b = 0;
+    NombreMotListe = [];
+
+    
+    NombreMotListeLocal.forEach(nombre => {
+        
+        NombreMotListe.push(parseInt(nombre));
+        i++;
+
+    });
+    //console.log(NombreMotListe);
+
+    ListNameLocal.forEach(element => {
+
+        MesListes[element] = [];
+
+    });
+
+
+   for (i=0 ; i < ListNameLocal.length; i++) {
+        for (j = 0; j < NombreMotListe[i] ; j += 2) {
+
+            MesListes[ListNameLocal[i]].push({fr:`${MotsLocal[b]}`, ru:`${MotsLocal[b+1]}`});
+            b+=2;
+        }
+        ListName.push(ListNameLocal[i]);
+
+    };
+
+    SelectList(localStorage.getItem("ChoosedListSaved"));
+
+    console.log(NombreMotListe);
+    console.log(MesListes);
+
+    }
+
+}
+
+// ----------------------------------------------------------------------------------------------
+// ----------------------------Fonctions Principales, rafraichissement + calculs-----------------------------------------
+// ----------------------------------------------------------------------------------------------
+
+
+function GetAnswer() {
+
+    Answer = InputBoxElement.value;
+    Answer = Answer.replaceAll(" ", "").replace("-", "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+
+    CheckAnswer();
+
+}
+
+function CheckAnswer() {
+
+    let ToutesReponsesFr = [];
+
+    if (FrRu == false) {
+
+        ToutesReponsesFr = ListeChoosed[NombreRandom].fr.replace("-", "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(",");
+    }
+    else 
+    {
+        ToutesReponsesFr = ListeChoosed[NombreRandom].ru.replace("-", "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(",");
+
+    }
+
+    let ReponseFr = ToutesReponsesFr.some(reponse => {
+
+        return reponse.replace("-", "").replaceAll(" ", "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === Answer;
+
+    });
+    
+
+    if (ReponseFr) {
+        
+        InputBoxElement.value = "";
+        HistoriqueBR.push(NombreRandom);
+        Historique.push(NombreRandom); Historique.push(-1);
+        UpdateScore();
+        UpdateHistorique();
+        AfficheMot();
+        Reponses[0] ++;
+
+
+    }
+    else {
+
+    }
+
+
+}
+
+function UpdateHistorique() {
+
+    LastNombreRandom = TabNombreRandom[TabNombreRandom.length-2];
+    HistoriqueElement.innerHTML ="";
+
+    if (Historique.length !== 0) {
+        console.log(Historique);
+        for (i = Historique.length-1; i >= 1; i -= 2) {
+
+            if (Historique[i] == -1) {
+
+                HistoriqueElement.innerHTML += `
+                    <div class="BonneReponse">${ChoosedList[Historique[i-1]].ru} => ${ChoosedList[Historique[i-1]].fr}</div>
+                `;
+
+            }
+            else {
+
+                HistoriqueElement.innerHTML += `
+                    <div class="SkipReponse">${ChoosedList[Historique[i-1]].ru} => ${ChoosedList[Historique[i-1]].fr}</div>
+                `;
+
+            }
+
+        }
+    }else {
+
+        HistoriqueElement.innerHTML += `History : `;
+    }
+
+}
+
+
+function UpdateGameLength(Number) {
+
+    
+
+    if (LongueurPartie + Number > 0 && LongueurPartie + Number <= 100 && (LongueurPartie + Number) > (Historique.length / 2))
+    {
+        LongueurPartie += Number
+        GameProgressElement.innerText  = (Historique.length / 2) + "/" + LongueurPartie;
+        
+    }
+
+}
+
+function UpdateScore() {
+
+    GameProgressElement = document.getElementById("GameProgress");
+
+    GameProgressElement.innerText = (Historique.length / 2) + "/" + LongueurPartie;
+
+    //GameProgressBarElement.innerHTML = "";
+
+   // GameProgressBarElement.style.border = "3px solid black";
+
+    if (Historique.length /2 < LongueurPartie) {
+
+        for (i = 1; i <= Historique.length; i += 2) {
+
+            if (Historique[i] == -1) {
+
+              //  GameProgressBarElement.innerHTML += `
+              //      <div class="BonneReponseSquare"> *</div>
+              //  `;
+                
+
+            }
+            else {
+
+              //  GameProgressBarElement.innerHTML += `
+             //       <div class="SkipReponseSquare"> *</div>
+              //  `;
+                
+
+            }
+
+        }
+    }
+    else {
+        let Gagner = "";
+        
+        if (Reponses[0] > Reponses[1])
+            {
+                Gagner = "Good job ! You Won !";
+
+            }
+        else if (Reponses[0] == Reponses[1])
+            {
+                Gagner = "Hhmmm... you can do better.";
+            }
+        else 
+            {
+                Gagner = "You lost...";
+
+            }
+
+           
+
+        
+
+        ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor"></p>
+        <div class="SeeListBox">
+            <div class="Resultat">${Gagner}</div>
+            <div>${Reponses[0]}/${LongueurPartie}</div>
+            <div class="SeeListButtonBox">
+                <button class="ListButtoninMenu" onclick="ResetPartie()">Restart</button>
+            </div>
+
+        </div>
+        `;
+       
+        Reponses[0] = 0; Reponses[1] = 0;
+    }
+
+}
+
+function RefreshListElements() { // Sert à déafficher les menus 
+
+    ListElements.innerHTML = "";
+
+}
+
+function ResetPartie() { // Reset d'a peu près tout
+
+    Historique= [];
+    TabNombreRandom = [];
+    UpdateScore();
+    UpdateHistorique();
+    AfficheMot();
+    RefreshListElements();
+
+
+
+}
+
+function Skip() { 
+
+    InputBoxElement.value = "";
+    HistoriqueSkip.push(NombreRandom);
+    Historique.push(NombreRandom); Historique.push(-2);
+    AfficheMot();
+    UpdateHistorique();
+    UpdateScore();
+    Reponses[1] ++;
+    
+
+}
+
+function AfficheLastWord() {
+
+    LastNombreRandom = TabNombreRandom[TabNombreRandom.length-2];
+    const LastWordElement = document.getElementById("LastWord");
+
+    if (TabNombreRandom.length == 1 )
+    {
+        LastWordElement.innerText = "";
+    }
+    else
+    {
+
+        LastWordElement.innerText = ChoosedList[LastNombreRandom].ru + " => " + ChoosedList[LastNombreRandom].fr;
+    }
+
+}
+
+function NombreGenerator() {
+
+    NombreRandom = Math.floor(Math.random() * ChoosedList.length);
+
+    if (WordMode == "EveryWord") {
+
+        if (TabNombreRandom.length * 2 >= NombreMotListe[ListeChoisie]-1)
+        
+        {
+            console.log(NombreMotListe[ListeChoisie]);
+            console.log("trop de nombres");
+            TabNombreRandom = [];
+            TabNombreRandom.push(NombreRandom);
+            return true;
+        }
+
+        if (TabNombreRandom.indexOf(NombreRandom) == -1)
+        {
+            TabNombreRandom.push(NombreRandom);
+            return true;
+        }
+        else {
+            console.log("false");
+            return false;
+        }
+
+    }
+    else {
+
+        TabNombreRandom.push(NombreRandom);
+        return true;
+
+    }
+
+
+}
+
+function AfficheMot() {
+
+    const GameModeText = document.getElementById("GameMode");
+    const WordBoxElement = document.getElementById("WordBox");
+    ChoosedList = MesListes[ListName[ListeChoisie]];
+
+    if (ChoosedList.length == 0){
+
+        WordBoxElement.innerText = "The list is empty !";
+    }
+    else {
+
+       
+
+
+        if (NombreGenerator() == true)
+        {
+            
+
+            if (FrRu == false)
+            {
+                WordBoxElement.innerText = `${ChoosedList[NombreRandom].ru}`;
+            }
+            else {
+
+                WordBoxElement.innerText = `${ChoosedList[NombreRandom].fr}`;
+
+            }
+            GameModeText.innerText = `Current List : ${ListName[ListeChoisie]}`;
+
+            AfficheLastWord();
+
+        }
+        else {
+
+            AfficheMot();
+
+        }
+        
+        
+
+    }
+
+}
+
+
+// ----------------------------------------------------------------------------------------------
+// ----------------------------Fonctions Boutons & Menus-----------------------------------------
+// ----------------------------------------------------------------------------------------------
+
+// ----------------------------Bouton Select---------------------------------------------------
 
 function SelectListButton() {
 
@@ -182,12 +543,7 @@ function SelectList(List) {
 
 }
 
-
-
-
-
-
-
+// ----------------------------Bouton See Lists-----------------------------------------
 
 function SeeListButton() {
 
@@ -277,15 +633,7 @@ function SeeList(List) {
    
 }
 
-
-
-
-
-
-
-
-
-
+// ----------------------------Bouton List Modification-----------------------------------------
 
 function CreateListButton() {
 
@@ -362,8 +710,8 @@ function ListToAddWord(List) {
         <div class="SeeListBox">
             <div class="SeeListButtonBox">
                 ${ListString}
-                <input style="text" id="AddWordInput" class="AddWordInput" placeholder="Translation = Word =..." onkeydown="if(event.key === 'Enter') AddWord()">
             </div>
+            <input style="text" id="AddWordInput" class="AddWordInput" placeholder="Translation = Word =..." onkeydown="if(event.key === 'Enter') AddWord()">
             <div class="SeeListWordsBox">
                 <table class=SeeListWordTable>
                     ${ListWords}
@@ -421,7 +769,6 @@ function DeleteWord(Number) {
     SaveWordList();
 
 }
-
 
 function CreateListeMenu() {
 
@@ -491,7 +838,6 @@ function CreateList() {
    
 
 }
-
 
 function SaveWordList() {
 
@@ -594,97 +940,42 @@ function ListToDelete(List, confirm) {
 
 }
 
+// ----------------------------Bouton translation - Word-----------------------------------------
 
+function ChangeLanguage() {
 
+    const ModeButtonElement = document.getElementById("ModeButton");
 
-
-
-
-
-
-
-
-
-function GetAnswer() {
-
-    Answer = InputBoxElement.value;
-    Answer = Answer.replaceAll(" ", "").replace("-", "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-
-    CheckAnswer();
+    if (FrRu == false) {FrRu = true; ModeButtonElement.innerText = "Word-Translation";}
+    else {FrRu = false; ModeButtonElement.innerText = "Translation-Word";}
+    
+    AfficheMot();
 
 }
 
-function CheckAnswer() {
+// ----------------------------Bouton Every word-----------------------------------------
 
-    let ToutesReponsesFr = [];
+function GameModeChanger() {
 
-    if (FrRu == false) {
 
-        ToutesReponsesFr = ListeChoosed[NombreRandom].fr.replace("-", "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(",");
-    }
-    else 
-    {
-        ToutesReponsesFr = ListeChoosed[NombreRandom].ru.replace("-", "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(",");
+    const GameModeButton = document.getElementById("ModeChangerButton");
 
-    }
+    if (WordMode == "EveryWord") {
 
-    let ReponseFr = ToutesReponsesFr.some(reponse => {
-
-        return reponse.replace("-", "").replaceAll(" ", "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === Answer;
-
-    });
-    
-
-    if (ReponseFr) {
-        
-        InputBoxElement.value = "";
-        HistoriqueBR.push(NombreRandom);
-        Historique.push(NombreRandom); Historique.push(-1);
-        UpdateScore();
-        UpdateHistorique();
-        AfficheMot();
-        Reponses[0] ++;
-
+        GameModeButton.innerText = "Random Word";
+        WordMode= "RNG";
 
     }
     else {
 
-    }
+        GameModeButton.innerText = "Every Word";
+        WordMode= "EveryWord";
 
-
-}
-
-function UpdateHistorique() {
-
-    LastNombreRandom = TabNombreRandom[TabNombreRandom.length-2];
-    HistoriqueElement.innerHTML ="";
-
-    if (Historique.length !== 0) {
-        console.log(Historique);
-        for (i = Historique.length-1; i >= 1; i -= 2) {
-
-            if (Historique[i] == -1) {
-
-                HistoriqueElement.innerHTML += `
-                    <div class="BonneReponse">${ChoosedList[Historique[i-1]].ru} => ${ChoosedList[Historique[i-1]].fr}</div>
-                `;
-
-            }
-            else {
-
-                HistoriqueElement.innerHTML += `
-                    <div class="SkipReponse">${ChoosedList[Historique[i-1]].ru} => ${ChoosedList[Historique[i-1]].fr}</div>
-                `;
-
-            }
-
-        }
-    }else {
-
-        HistoriqueElement.innerHTML += `History : `;
     }
 
 }
+
+// ----------------------------Boutons Longueur partie-----------------------------------------
 
 function GameLengthButton() {
     const GameLengthElement = document.getElementById("GameLengthBox");
@@ -715,322 +1006,3 @@ function GameLengthButton() {
     GameProgressElement = document.getElementById("GameProgress");
 }
     
-
-function UpdateGameLength(Number) {
-
-    
-
-    if (LongueurPartie + Number > 0 && LongueurPartie + Number <= 100 && (LongueurPartie + Number) > (Historique.length / 2))
-    {
-        LongueurPartie += Number
-        GameProgressElement.innerText  = (Historique.length / 2) + "/" + LongueurPartie;
-        
-    }
-
-}
-
-function UpdateScore() {
-
-    GameProgressElement = document.getElementById("GameProgress");
-
-    GameProgressElement.innerText = (Historique.length / 2) + "/" + LongueurPartie;
-
-    //GameProgressBarElement.innerHTML = "";
-
-   // GameProgressBarElement.style.border = "3px solid black";
-
-    if (Historique.length /2 < LongueurPartie) {
-
-        for (i = 1; i <= Historique.length; i += 2) {
-
-            if (Historique[i] == -1) {
-
-              //  GameProgressBarElement.innerHTML += `
-              //      <div class="BonneReponseSquare"> *</div>
-              //  `;
-                
-
-            }
-            else {
-
-              //  GameProgressBarElement.innerHTML += `
-             //       <div class="SkipReponseSquare"> *</div>
-              //  `;
-                
-
-            }
-
-        }
-    }
-    else {
-        let Gagner = "";
-        
-        if (Reponses[0] > Reponses[1])
-            {
-                Gagner = "Good job ! You Won !";
-
-            }
-        else if (Reponses[0] == Reponses[1])
-            {
-                Gagner = "Hhmmm... you can do better.";
-            }
-        else 
-            {
-                Gagner = "You lost...";
-
-            }
-
-           
-
-        
-
-        ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor"></p>
-        <div class="SeeListBox">
-            <div class="Resultat">${Gagner}</div>
-            <div>${Reponses[0]}/${LongueurPartie}</div>
-            <div class="SeeListButtonBox">
-                <button class="ListButtoninMenu" onclick="ResetPartie()">Restart</button>
-            </div>
-
-        </div>
-        `;
-       
-        Reponses[0] = 0; Reponses[1] = 0;
-    }
-
-}
-
-function RefreshListElements() {
-
-    ListElements.innerHTML = "";
-
-}
-
-
-function ResetPartie() {
-
-    Historique= [];
-    TabNombreRandom = [];
-    UpdateScore();
-    UpdateHistorique();
-    AfficheMot();
-    RefreshListElements();
-
-
-
-}
-
-function Skip() {
-
-    InputBoxElement.value = "";
-    HistoriqueSkip.push(NombreRandom);
-    Historique.push(NombreRandom); Historique.push(-2);
-    AfficheMot();
-    UpdateHistorique();
-    UpdateScore();
-    Reponses[1] ++;
-    
-
-}
-
-function AfficheLastWord() {
-
-    LastNombreRandom = TabNombreRandom[TabNombreRandom.length-2];
-    const LastWordElement = document.getElementById("LastWord");
-
-    if (TabNombreRandom.length == 1 )
-    {
-        LastWordElement.innerText = "";
-    }
-    else
-    {
-
-        LastWordElement.innerText = ChoosedList[LastNombreRandom].ru + " => " + ChoosedList[LastNombreRandom].fr;
-    }
-
-}
-
-function ChangeLanguage() {
-
-    const ModeButtonElement = document.getElementById("ModeButton");
-
-    if (FrRu == false) {FrRu = true; ModeButtonElement.innerText = "Word-Translation";}
-    else {FrRu = false; ModeButtonElement.innerText = "Translation-Word";}
-    
-    AfficheMot();
-
-}
-
-
-function GameModeChanger() {
-
-
-    const GameModeButton = document.getElementById("ModeChangerButton");
-
-    if (WordMode == "EveryWord") {
-
-        GameModeButton.innerText = "Random Word";
-        WordMode= "RNG";
-
-    }
-    else {
-
-        GameModeButton.innerText = "Every Word";
-        WordMode= "EveryWord";
-
-    }
-
-}
-
-
-function NombreGenerator() {
-
-    NombreRandom = Math.floor(Math.random() * ChoosedList.length);
-
-    if (WordMode == "EveryWord") {
-
-        if (TabNombreRandom.length * 2 >= NombreMotListe[ListeChoisie]-1)
-        
-        {
-            console.log(NombreMotListe[ListeChoisie]);
-            console.log("trop de nombres");
-            TabNombreRandom = [];
-            TabNombreRandom.push(NombreRandom);
-            return true;
-        }
-
-        if (TabNombreRandom.indexOf(NombreRandom) == -1)
-        {
-            TabNombreRandom.push(NombreRandom);
-            return true;
-        }
-        else {
-            console.log("false");
-            return false;
-        }
-
-    }
-    else {
-
-        TabNombreRandom.push(NombreRandom);
-        return true;
-
-    }
-
-
-}
-
-function AfficheMot() {
-
-    const GameModeText = document.getElementById("GameMode");
-    const WordBoxElement = document.getElementById("WordBox");
-    ChoosedList = MesListes[ListName[ListeChoisie]];
-
-    if (ChoosedList.length == 0){
-
-        WordBoxElement.innerText = "The list is empty !";
-    }
-    else {
-
-       
-
-
-        if (NombreGenerator() == true)
-        {
-            
-
-            if (FrRu == false)
-            {
-                WordBoxElement.innerText = `${ChoosedList[NombreRandom].ru}`;
-            }
-            else {
-
-                WordBoxElement.innerText = `${ChoosedList[NombreRandom].fr}`;
-
-            }
-            GameModeText.innerText = `Current List : ${ListName[ListeChoisie]}`;
-
-            AfficheLastWord();
-
-        }
-        else {
-
-            AfficheMot();
-
-        }
-        
-        
-
-    }
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function OnLoad() {
-
-
-  //  GameProgressBarElement.style.border = "3px solid transparent";
-
-
-
-    if (GameAlreadyPlayed == "yes") {
-    
-    const ListNameLocal = localStorage.getItem("UserLists").split(",");
-    const MotsLocal = localStorage.getItem("Mots").split(".");
-    const NombreMotListeLocal = localStorage.getItem("ListWordCount").split(",");
-
-    ListName = [];
-    
-    let i = 0;
-    let b = 0;
-    NombreMotListe = [];
-
-    
-    NombreMotListeLocal.forEach(nombre => {
-        
-        NombreMotListe.push(parseInt(nombre));
-        i++;
-
-    });
-    //console.log(NombreMotListe);
-
-    ListNameLocal.forEach(element => {
-
-        MesListes[element] = [];
-
-    });
-
-
-   for (i=0 ; i < ListNameLocal.length; i++) {
-        for (j = 0; j < NombreMotListe[i] ; j += 2) {
-
-            MesListes[ListNameLocal[i]].push({fr:`${MotsLocal[b]}`, ru:`${MotsLocal[b+1]}`});
-            b+=2;
-        }
-        ListName.push(ListNameLocal[i]);
-
-    };
-
-    SelectList(localStorage.getItem("ChoosedListSaved"));
-
-    console.log(NombreMotListe);
-    console.log(MesListes);
-
-    }
-    
-
-
-}

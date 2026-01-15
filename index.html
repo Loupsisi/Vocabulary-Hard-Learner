@@ -20,8 +20,8 @@
                 <button class="ListButton" onclick="CreateListButton() ">List Modification</button>
             </div>
             <div class="GameModeButtonBox">
-                <button id="ModeButton" class="ListButton" onclick="ChangeLanguage()">Translation-Word</button>
-                <button id="ModeChangerButton" class="ListButton" onclick="GameModeChanger()">Every Word</button>
+                <button id="ModeButton" class="GameModeButton" onclick="ChangeLanguage()">Translation-Word</button>
+                <button id="ModeChangerButton" class="GameModeButton" onclick="GameModeChanger()">Every Word</button>
             </div>
         </div>
         <div class="ContentBox">
@@ -35,14 +35,19 @@
             </div>
             <div id="GameMode" class="GameMode">Current List : </div>
             <div class="AllWordBox">
-                <div class="PreviousWord">Previous Word: </div>
-                <div id="LastWord" class="LastWord"></div>
-                <div id="WordBox" class="WordBox">Word to find</div>
+                <div class="PreviousWordBox">
+                    <div class="PreviousWord">Previous Word: </div>
+                    <div id="LastWord" class="LastWord"></div>
+                </div>
+                <div class="WordBoxBox">
+                    <div id="WordBox" class="WordBox">Word to find</div>
+                </div>
             </div>
             <div class="AnswerBox">
                 <button class="SkipButton" onclick="Skip()">Skip</button>
                 <input type="text" id="InputBox" class="InputBox" autocomplete="off" onkeyup="GetAnswer()" placeholder="Type the answer">
             </div>
+            <br>
         </div>
         <div class="HistoriqueBox">
             <div id="SkipHistory" class="SkipHistory">History : </div>
