@@ -75,6 +75,7 @@ let SeeListHTML = "";
 let Answer = "";
 let ListString = "";
 let NomListeChoisie ="";
+let WordMode = "EveryWord";
 
 let ListeChoisie = 0;
 let NombreRandom = 0;
@@ -118,17 +119,42 @@ function SelectListButton() {
 
 }
 
+function OnlyEmptyLists() {
+
+    let nombre = 0;
+
+    NombreMotListe.forEach(element => {
+
+        nombre += element;
+
+    });
+
+    if (nombre !== 0) {
+
+        return true
+    }
+    else {
+
+        return false
+    }
+
+}
+
 function SelectList(List) {
     let ListNumber = -1;
 
-    ListName.forEach( element => {
+    if (OnlyEmptyLists())
+    {
+        ListName.forEach( element => {
 
             ListNumber ++;
             if (List == element) {
                 if (NombreMotListe[ListNumber] !== 0) {
                     ListeChoisie = ListNumber;
-                    ListeChoosed = MesListes[ListName[ListeChoisie]];
-                    ResetPartie()
+                    //ListeChoosed = MesListes[ListName[ListeChoisie]];
+                    ListeChoosed = MesListes[List];
+                    localStorage.setItem("ChoosedListSaved", List);
+                    ResetPartie();
                 }
                 else 
                 {
@@ -145,7 +171,12 @@ function SelectList(List) {
             }
         
         });
+    }
+    else {
+        const GameModeText = document.getElementById("GameMode");
 
+        GameModeText.innerText = "Current List : All Lists are empty !"
+    }
 
 
 
@@ -628,23 +659,29 @@ function UpdateHistorique() {
     LastNombreRandom = TabNombreRandom[TabNombreRandom.length-2];
     HistoriqueElement.innerHTML ="";
 
-    for (i = Historique.length-1; i >= 1; i -= 2) {
+    if (Historique.length !== 0) {
+        console.log(Historique);
+        for (i = Historique.length-1; i >= 1; i -= 2) {
 
-        if (Historique[i] == -1) {
+            if (Historique[i] == -1) {
 
-            HistoriqueElement.innerHTML += `
-                <div class="BonneReponse">${ChoosedList[Historique[i-1]].ru} => ${ChoosedList[Historique[i-1]].fr}</div>
-            `;
+                HistoriqueElement.innerHTML += `
+                    <div class="BonneReponse">${ChoosedList[Historique[i-1]].ru} => ${ChoosedList[Historique[i-1]].fr}</div>
+                `;
+
+            }
+            else {
+
+                HistoriqueElement.innerHTML += `
+                    <div class="SkipReponse">${ChoosedList[Historique[i-1]].ru} => ${ChoosedList[Historique[i-1]].fr}</div>
+                `;
+
+            }
 
         }
-        else {
+    }else {
 
-             HistoriqueElement.innerHTML += `
-                <div class="SkipReponse">${ChoosedList[Historique[i-1]].ru} => ${ChoosedList[Historique[i-1]].fr}</div>
-            `;
-
-        }
-
+        HistoriqueElement.innerHTML += `History : `;
     }
 
 }
@@ -758,7 +795,7 @@ function UpdateScore() {
         </div>
         `;
        
-        Reponse[0] = 0; Reponse[1] = 0;
+        Reponses[0] = 0; Reponses[1] = 0;
     }
 
 }
@@ -824,6 +861,65 @@ function ChangeLanguage() {
 
 }
 
+
+function GameModeChanger() {
+
+
+    const GameModeButton = document.getElementById("ModeChangerButton");
+
+    if (WordMode == "EveryWord") {
+
+        GameModeButton.innerText = "Random Word";
+        WordMode= "RNG";
+
+    }
+    else {
+
+        GameModeButton.innerText = "Every Word";
+        WordMode= "EveryWord";
+
+    }
+
+}
+
+
+function NombreGenerator() {
+
+    NombreRandom = Math.floor(Math.random() * ChoosedList.length);
+
+    if (WordMode == "EveryWord") {
+
+        if (TabNombreRandom.length * 2 >= NombreMotListe[ListeChoisie]-1)
+        
+        {
+            console.log(NombreMotListe[ListeChoisie]);
+            console.log("trop de nombres");
+            TabNombreRandom = [];
+            TabNombreRandom.push(NombreRandom);
+            return true;
+        }
+
+        if (TabNombreRandom.indexOf(NombreRandom) == -1)
+        {
+            TabNombreRandom.push(NombreRandom);
+            return true;
+        }
+        else {
+            console.log("false");
+            return false;
+        }
+
+    }
+    else {
+
+        TabNombreRandom.push(NombreRandom);
+        return true;
+
+    }
+
+
+}
+
 function AfficheMot() {
 
     const GameModeText = document.getElementById("GameMode");
@@ -836,21 +932,34 @@ function AfficheMot() {
     }
     else {
 
-        NombreRandom = Math.floor(Math.random() * ChoosedList.length);
-        TabNombreRandom.push(NombreRandom);
+       
 
-        if (FrRu == false)
+
+        if (NombreGenerator() == true)
         {
-            WordBoxElement.innerText = `${ChoosedList[NombreRandom].ru}`;
+            
+
+            if (FrRu == false)
+            {
+                WordBoxElement.innerText = `${ChoosedList[NombreRandom].ru}`;
+            }
+            else {
+
+                WordBoxElement.innerText = `${ChoosedList[NombreRandom].fr}`;
+
+            }
+            GameModeText.innerText = `Current List : ${ListName[ListeChoisie]}`;
+
+            AfficheLastWord();
+
         }
         else {
 
-            WordBoxElement.innerText = `${ChoosedList[NombreRandom].fr}`;
+            AfficheMot();
 
         }
-        GameModeText.innerText = `Current List : ${ListName[ListeChoisie]}`;
-
-        AfficheLastWord();
+        
+        
 
     }
 
@@ -914,6 +1023,9 @@ function OnLoad() {
         ListName.push(ListNameLocal[i]);
 
     };
+
+    SelectList(localStorage.getItem("ChoosedListSaved"));
+
     console.log(NombreMotListe);
     console.log(MesListes);
 
