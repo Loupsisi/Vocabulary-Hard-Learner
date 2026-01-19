@@ -49,6 +49,9 @@ MesListes["Famille"] = [
     {fr: "Neveu", ru: "Племянник"}
 ];
 
+let MesConteneurs = {}; 
+
+MesConteneurs["Russian"] = ["Famille", "Ecole"];
 
 
 let ListName = ["Famille", "Ecole"];
@@ -59,8 +62,8 @@ let HistoriqueBR = [];
 let HistoriqueSkip = [];
 let Historique = [];
 let CreateChoosedList = [];
+let ConteneurList = ["Russian"];
 let Reponses = [0,0];
-let NombreMotListe = [40,40];
 
 let SelectListLock = false;
 let SeeListLock = false;
@@ -75,6 +78,8 @@ let SeeListHTML = "";
 let Answer = "";
 let ListString = "";
 let NomListeChoisie ="";
+let ConteneurListString = "";
+let ConteneurToDelete = "";
 let WordMode = "EveryWord";
 
 let ListeChoisie = 0;
@@ -106,49 +111,38 @@ function OnLoad() {
 
 
 
+
+
+
     if (GameAlreadyPlayed == "yes") {
     
-    const ListNameLocal = localStorage.getItem("UserLists").split(",");
-    const MotsLocal = localStorage.getItem("Mots").split(".");
-    const NombreMotListeLocal = localStorage.getItem("ListWordCount").split(",");
-
-    ListName = [];
-    
-    let i = 0;
-    let b = 0;
-    NombreMotListe = [];
-
-    
-    NombreMotListeLocal.forEach(nombre => {
+        const ListNameLocal = localStorage.getItem("UserListsName");
+        const MesListesLocal = localStorage.getItem("UserLists");
+        const ConteneurContent = localStorage.getItem("MesConteneursSaved");
+        const ConteneursNomLocal = localStorage.getItem("ListConteneurSaved");
         
-        NombreMotListe.push(parseInt(nombre));
-        i++;
+        if (ConteneurContent) {
 
-    });
-    //console.log(NombreMotListe);
-
-    ListNameLocal.forEach(element => {
-
-        MesListes[element] = [];
-
-    });
-
-
-   for (i=0 ; i < ListNameLocal.length; i++) {
-        for (j = 0; j < NombreMotListe[i] ; j += 2) {
-
-            MesListes[ListNameLocal[i]].push({fr:`${MotsLocal[b]}`, ru:`${MotsLocal[b+1]}`});
-            b+=2;
+            MesConteneurs = JSON.parse(ConteneurContent);
         }
-        ListName.push(ListNameLocal[i]);
 
-    };
+        
+        if (ConteneursNomLocal) {
 
-    SelectList(localStorage.getItem("ChoosedListSaved"));
+            ConteneurList = JSON.parse(ConteneursNomLocal);
+        }
 
-    console.log(NombreMotListe);
-    console.log(MesListes);
+        if (ListNameLocal) {
 
+            ListName = JSON.parse(ListNameLocal);
+
+        }
+
+        if (MesListesLocal) {
+
+            MesListes = JSON.parse(MesListesLocal);
+
+        }
     }
 
 }
@@ -379,11 +373,9 @@ function NombreGenerator() {
 
     if (WordMode == "EveryWord") {
 
-        if (TabNombreRandom.length * 2 >= NombreMotListe[ListeChoisie]-1)
+        if (TabNombreRandom.length >= ChoosedList.length-1)
         
         {
-            console.log(NombreMotListe[ListeChoisie]);
-            console.log("trop de nombres");
             TabNombreRandom = [];
             TabNombreRandom.push(NombreRandom);
             return true;
@@ -484,9 +476,17 @@ function OnlyEmptyLists() {
 
     let nombre = 0;
 
-    NombreMotListe.forEach(element => {
+    ListName.forEach(element => {
 
-        nombre += element;
+        if (MesListes[element].length == 0 || MesListes[element].length === null) {
+
+            nombre +=0
+
+        }
+        else {
+
+            nombre = 1;
+        }
 
     });
 
@@ -510,7 +510,7 @@ function SelectList(List) {
 
             ListNumber ++;
             if (List == element) {
-                if (NombreMotListe[ListNumber] !== 0) {
+                if (MesListes[List].length !== 0) {
                     ListeChoisie = ListNumber;
                     //ListeChoosed = MesListes[ListName[ListeChoisie]];
                     ListeChoosed = MesListes[List];
@@ -602,8 +602,12 @@ function SeeList(List) {
             <div class="SeeListButtonBox">
                 ${ListString}
             </div>
-            <div class="SeeListWordsBox">
-                <table class="SeeListWordTable">
+            <div class="
+            
+            sBox">
+                <table class="
+                
+                Table">
                     <tr>
                         <th>Word</th>
                         <th>Translation</th>
@@ -643,6 +647,7 @@ function CreateListButton() {
                 <button class="ListButtonInMenu" onclick="AddWordToListButton()">Add Words</button>
                 <button class="ListButtonInMenu"  onclick="CreateListeMenu()">Create List</button>
                 <button class="ListButtonInMenu"  onclick="DeleteListeMenu()">Delete List</button>
+                <button class="ListButtonInMenu"  onclick="ManageListMenu()">Reorder Lists</button>
             </div>
         </div>
     `;
@@ -712,8 +717,12 @@ function ListToAddWord(List) {
                 ${ListString}
             </div>
             <input style="text" id="AddWordInput" class="AddWordInput" placeholder="Translation = Word =..." onkeydown="if(event.key === 'Enter') AddWord()">
-            <div class="SeeListWordsBox">
-                <table class=SeeListWordTable>
+            <div class="
+            
+            sBox">
+                <table class=
+                
+                Table>
                     ${ListWords}
                 </table>
             </div>
@@ -751,22 +760,21 @@ function AddWord() {
 
         CreateChoosedList.push(NewWord);
         console.log(ListeAddWordChoosed);
-        NombreMotListe[ListeAddWordChoosed] += 2;
 
     }
     ListToAddWord(NomListeChoisie);
-    localStorage.setItem("UserList", MesListes);
-    localStorage.setItem("ListWordCount", NombreMotListe);
-    SaveWordList();
+    localStorage.setItem("UserList", JSON.stringify(MesListes));
+
+
 }
 
 function DeleteWord(Number) {
 
     ChoosedList.splice(Number, 1);
     ListToAddWord(NomListeChoisie);
-    NombreMotListe[ListeAddWordChoosed] -= 2;
-    localStorage.setItem("ListWordCount", NombreMotListe);
-    SaveWordList();
+    localStorage.setItem("UserList", JSON.stringify(MesListes));
+
+
 
 }
 
@@ -815,9 +823,9 @@ function CreateList() {
             `;
              MesListes[NewListeInputBox.value] = [];
             ListName.push(NewListeInputBox.value);
-            NombreMotListe.push(0);
-            localStorage.setItem("ListWordCount", NombreMotListe);
-            localStorage.setItem("UserLists", ListName);
+
+            localStorage.setItem("UserListsName", JSON.stringify(ListName));
+            localStorage.setItem("UserLists", JSON.stringify(MesListes));
         }
         else {
             ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor" onclick="RefreshListElements()"></p>
@@ -839,30 +847,6 @@ function CreateList() {
 
 }
 
-function SaveWordList() {
-
-    let TousLesMots = "";
-
-    ListName.forEach(element => {
-
-
-        MesListes[element].forEach(mot => {
-
-            TousLesMots += mot.fr + "." + mot.ru + ".";
-
-        });
-
-    });
-    TousLesMots = TousLesMots.slice(0, -1);
-    localStorage.setItem("Mots", TousLesMots);
-
-    if (GameAlreadyPlayed == "no")
-    {
-        localStorage.setItem("GameAlreadyPlayed", "yes");
-    }
-    
-
-}
 
 function DeleteListeMenu() {
 
@@ -889,16 +873,34 @@ function ListToDelete(List, confirm) {
 
     if (confirm == 1 ) {DeleteComfirmation =1;}
 
-    if (DeleteComfirmation !== 0)
-    {
+    ListString = "";
+
+    ListName.forEach(element => { 
+        
+        if (element == List) {
+
+                ListString += `<button onclick="ListToDelete('${List}', 1)">Delete</button><button class="ListButtonInMenu" onclick="ListToDelete('${element}', 0)">${element}</button><button onclick="ListToDelete('${List}', 2)">Cancel</button>
+            `;
+        }
+
+        else {
+
+                ListString += `<button class="ListButtonInMenu" onclick="ListToDelete('${element}', 0)">${element}</button>
+            `;
+
+        }  
+
+        
+   
+    });
 
         if (confirm == 0){
+
             DeleteComfirmation = 0;
                 ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor" onclick="RefreshListElements()"></p>
             <div class="SeeListBox">
                 <div class="SeeListButtonBox">
                     ${ListString}
-                    <button onclick="ListToDelete('${List}', 1)">Delete</button><button onclick="ListToDelete('${List}', 2)">Cancel</button>
                 </div>
             </div>
             `;
@@ -918,27 +920,209 @@ function ListToDelete(List, confirm) {
                 if (List == element)
                 {
                     ListName.splice(i, 1);
-                    NombreMotListe.splice(i,1);
 
                 }
                 i++;
 
             });
-            localStorage.setItem("UserLists", ListName);
-            localStorage.setItem("ListWordCount", NombreMotListe);
+            localStorage.setItem("UserListsName", JSON.stringify(ListName));
+            localStorage.setItem("UserLists", JSON.stringify(MesListes));
 
-            SaveWordList();
             DeleteListeMenu();
 
         }
-    }
-    else 
-    {
-        DeleteComfirmation = 2;
-        DeleteListeMenu();
-    }
 
 }
+
+function ManageListMenu() {
+    let ConteneurString = "";
+    ListString = "";
+
+    const Input = ` <input style="text" id="AddListInput" class="AddListInput" placeholder="Conteneur's Name" onkeydown="if(event.key === 'Enter') CreateConteneur()">
+        `;
+    if (ConteneurList.length != 0) {
+        ConteneurList.forEach(element => { 
+            
+            if (ConteneurToDelete != "")
+            {
+                if (ConteneurToDelete == element)
+                {
+                    ConteneurString += `<div><button class="ListButtonInMenu" onclick="DisplayConteneurList('${element}')">${element}</button><button onclick="DeleteConteneur('${element}')">delete</button></div>`;  
+                }
+                else {
+
+                    ConteneurString += `<button class="ListButtonInMenu" onclick="DisplayConteneurList('${element}')">${element}</button>`;  
+                }
+                
+            }
+            else {
+
+                ConteneurString += `<button class="ListButtonInMenu" onclick="DisplayConteneurList('${element}')">${element}</button>`;  
+
+            }
+        });
+    }   
+
+    ListElements.innerHTML = `<p id="PageOpacitor" class="PageOpacitor" onclick="RefreshListElements()"></p>
+        <div class="SeeListBox">
+            ${Input}
+            <div class="SeeListButtonBox">
+            
+                ${ConteneurString}
+            </div>
+            ${ConteneurListString}
+        </div>
+    `;
+
+    ConteneurToDelete="";
+    ConteneurListString="";
+
+}
+
+function CreateConteneur() {
+
+    const NewListeInputBox = document.getElementById("AddListInput");
+
+    if (NewListeInputBox.value !== "")
+    {
+        if (DoesConteneurAlreadyExist(NewListeInputBox.value)){
+
+            ConteneurList.push(`${NewListeInputBox.value}`);
+            MesConteneurs[`${NewListeInputBox.value}`] = [];
+            ManageListMenu();
+
+        }
+        else {
+
+
+
+        }
+    }
+
+    localStorage.setItem("ListConteneurSaved", JSON.stringify(ConteneurList));
+    localStorage.setItem("MesConteneursSaved", JSON.stringify(MesConteneurs));
+
+
+}
+    
+
+
+function DoesConteneurAlreadyExist(value) {
+
+    if (ConteneurList.indexOf(value) == -1) {
+
+        return true
+    }
+    else {
+
+        return false
+    }
+
+
+}
+    
+
+function DisplayConteneurList(Conteneur) {
+    ConteneurListString="";
+
+    ConteneurToDelete=Conteneur;
+
+    if (MesConteneurs[Conteneur] != null)
+        {
+        ListName.forEach(list => {
+
+            if (IsListInConteneur(Conteneur, list) == true) {
+
+                ConteneurListString += `
+                <tr>
+                    <td>${list}</td><td class="ListInConteneur"><button class="ListInConteneur" onclick="AddListToConteneur('${Conteneur}', '${list}', 0)">-</button></td>
+                </tr>
+            `;
+
+            }
+            else {
+
+                ConteneurListString += `
+                <tr>
+                    <td>${list}</td><td class="ListNotInConteneur"><button class="ListNotInConteneur" onclick="AddListToConteneur('${Conteneur}','${list}', 1)">+</button></td>
+                </tr>
+            `;
+
+            }
+
+        });
+    }
+    else {
+        MesConteneurs[Conteneur] = [];
+    }
+
+    ManageListMenu();
+
+}
+
+function IsListInConteneur(conteneur, list) {
+    let Bool = false;
+
+    if (MesConteneurs[conteneur].length != 0){
+
+    
+        MesConteneurs[conteneur].forEach(element => {
+
+            if (Bool == true)
+            {
+                return true
+            }
+            else {
+
+                if (element == list)
+                {
+                    Bool = true;
+                }
+                else {
+
+                    Bool = false;
+                }
+            }
+
+        });
+
+    }
+
+    return Bool
+}
+
+function AddListToConteneur(Conteneur, List, Answer) {
+
+    if (Answer == 0){
+
+        MesConteneurs[Conteneur].splice((MesConteneurs[Conteneur]).indexOf(List), 1); 
+
+    }
+    else {
+
+        MesConteneurs[Conteneur].push(List);
+
+    }
+    DisplayConteneurList(Conteneur);
+
+    localStorage.setItem("MesConteneursSaved", JSON.stringify(MesConteneurs));
+
+}
+
+function DeleteConteneur(Conteneur) {
+
+    delete MesConteneurs[Conteneur]
+    ConteneurList.splice(ConteneurList.indexOf(Conteneur), 1);
+
+    localStorage.setItem("MesConteneursSaved", JSON.stringify(MesConteneurs));
+    localStorage.setItem("ListConteneurSaved", JSON.stringify(ConteneurList));
+
+    ManageListMenu();
+
+}
+
+
+
 
 // ----------------------------Bouton translation - Word-----------------------------------------
 
