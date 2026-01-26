@@ -109,17 +109,13 @@ function OnLoad() {
 
   //  GameProgressBarElement.style.border = "3px solid transparent";
 
-
-
-
-
-
     if (GameAlreadyPlayed == "yes") {
     
         const ListNameLocal = localStorage.getItem("UserListsName");
         const MesListesLocal = localStorage.getItem("UserLists");
         const ConteneurContent = localStorage.getItem("MesConteneursSaved");
         const ConteneursNomLocal = localStorage.getItem("ListConteneurSaved");
+        const CurrentListLocal = localStorage.getItem("ChoosedListSaved");
         
         if (ConteneurContent) {
 
@@ -143,6 +139,8 @@ function OnLoad() {
             MesListes = JSON.parse(MesListesLocal);
 
         }
+
+        SelectList(CurrentListLocal); 
     }
 
 }
@@ -763,7 +761,7 @@ function AddWord() {
 
     }
     ListToAddWord(NomListeChoisie);
-    localStorage.setItem("UserList", JSON.stringify(MesListes));
+    localStorage.setItem("UserLists", JSON.stringify(MesListes));
 
 
 }
@@ -772,7 +770,7 @@ function DeleteWord(Number) {
 
     ChoosedList.splice(Number, 1);
     ListToAddWord(NomListeChoisie);
-    localStorage.setItem("UserList", JSON.stringify(MesListes));
+    localStorage.setItem("UserLists", JSON.stringify(MesListes));
 
 
 
