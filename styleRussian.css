@@ -10,6 +10,7 @@ body {
     border-top: 0px;
     border-bottom: 0px;
     min-width: 250px;
+    overflow: hidden;
 }
 
 .ContentBox {
@@ -331,7 +332,7 @@ button:hover {
 .SeeListBox {
 
     display: flex;
-    flex-direction: column;
+ 
     flex-wrap: wrap;
     position: absolute;
     width: 80%;
@@ -339,6 +340,7 @@ button:hover {
     border: 5px solid black;
     padding: 10px;
     min-width: 300px;
+    max-height: 85dvh;
     
     background-color: white;
     justify-self: center;
@@ -354,7 +356,7 @@ button:hover {
     display: flex;
     justify-content: center;
     align-self: center;
-    overflow-y: auto;
+    overflow-y: scroll;
     gap: 3px;
     padding: 3px;
     border: 2px solid black;
@@ -381,11 +383,12 @@ button:hover {
 
     margin-top: 10px;
     font-size: 2.3dvh;
-    max-height: 60dvh;
+    max-height: 75dvh ;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
     align-items: center;
+    overflow-x: scroll;
 }
 
 .SeeListWordTable {
@@ -394,8 +397,10 @@ button:hover {
     flex-wrap: wrap;
     height: auto;
     text-align: center;
+    max-height: 75dvh ;
     background-color: gray;
     border-radius: 5px;
+    overflow-x: scroll;
 
 }
 
@@ -435,5 +440,6 @@ button:hover {
     margin: 0;
     user-select: none;
     display: block;
+    scroll-behavior: none;
 
 }

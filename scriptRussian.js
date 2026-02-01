@@ -600,12 +600,8 @@ function SeeList(List) {
             <div class="SeeListButtonBox">
                 ${ListString}
             </div>
-            <div class="
-            
-            sBox">
-                <table class="
-                
-                Table">
+            <div class="SeeListWordsBox">
+                <table class="SeeListWordTable">
                     <tr>
                         <th>Word</th>
                         <th>Translation</th>
@@ -715,12 +711,8 @@ function ListToAddWord(List) {
                 ${ListString}
             </div>
             <input style="text" id="AddWordInput" class="AddWordInput" placeholder="Translation = Word =..." onkeydown="if(event.key === 'Enter') AddWord()">
-            <div class="
-            
-            sBox">
-                <table class=
-                
-                Table>
+            <div class="SeeListWordsBox">
+                <table class="SeeListWordTable">
                     ${ListWords}
                 </table>
             </div>
